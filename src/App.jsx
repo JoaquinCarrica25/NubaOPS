@@ -10,6 +10,7 @@ import PerfilGate from "./components/PerfilGate.jsx";
 import AppShell from "./components/AppShell.jsx";
 import Inicio from "./pages/Inicio.jsx";
 import Prevencion from "./pages/Prevencion.jsx";
+import Pendientes from "./pages/Pendientes.jsx";
 import Incidencias from "./pages/Incidencias.jsx";
 import Calendario from "./pages/Calendario.jsx";
 import Historial from "./pages/Historial.jsx";
@@ -94,6 +95,7 @@ export default function App() {
       <Route element={<AppShell />}>
         <Route index element={<Inicio />} />
         <Route path="/prevencion" element={<Prevencion />} />
+        <Route path="/pendientes" element={<Pendientes />} />
         <Route path="/incidencias" element={<Incidencias />} />
         <Route path="/calendario" element={<Calendario />} />
         <Route path="/historial" element={<Historial />} />
