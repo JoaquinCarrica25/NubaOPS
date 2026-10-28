@@ -1,10 +1,6 @@
 // ============================================================
 // Nuba Ops — Almacén de datos en memoria
 // ============================================================
-// Guarda en memoria lo que llega de Supabase y avisa a React
-// de cada cambio para que repinte. También mantiene una copia
-// en localStorage para que la app abra al instante.
-// ============================================================
 
 import { APARTAMENTOS, ITEMS, itemsDe, RESPONSABLES } from "./seed.js";
 
@@ -32,7 +28,6 @@ const pick = (arr, r) => arr[Math.floor(r() * arr.length) % arr.length];
 const iso = (d) => new Date(d).toISOString();
 const diasAtras = (n) => iso(Date.now() - n * 86400000);
 
-// Datos de ejemplo: solo se usan si no hay conexión con Supabase
 export function crearDemo() {
   const tareas = [];
   APARTAMENTOS.forEach((apt, i) => {
@@ -49,6 +44,10 @@ export function crearDemo() {
         frecuencia: "Semanalmente",
         estado: hecha ? "completada" : "pendiente",
         funciona: hecha ? true : null,
+        no_aplica: false,
+        accion: "",
+        accion_abierta: false,
+        accion_desde: null,
         fecha: hecha ? diasAtras(Math.floor(r() * 16)).slice(0, 10) : null,
         hora: null,
         responsable: hecha ? pick(RESPONSABLES, r) : "",
@@ -64,6 +63,7 @@ export function crearDemo() {
     version: 1,
     apartamentos: APARTAMENTOS.map((a) => ({ ...a })),
     tareas,
+    verificaciones: [],
     incidencias: [],
     reservas: [],
     historial: [],
@@ -103,6 +103,7 @@ export function hidratar(datos) {
     version: 1,
     apartamentos: datos.apartamentos || [],
     tareas: datos.tareas || [],
+    verificaciones: datos.verificaciones || [],
     incidencias: datos.incidencias || [],
     reservas: datos.reservas || [],
     historial: [],
