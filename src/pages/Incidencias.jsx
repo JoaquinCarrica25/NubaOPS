@@ -1,5 +1,5 @@
 // ============================================================
-// Nuba Ops — Incidencias
+// Nuba Ops — Incidencias (con importación ICNEA .csv)
 // ============================================================
 
 import { useMemo, useState } from "react";
@@ -15,6 +15,7 @@ import {
   Plus,
   RotateCcw,
   Wrench,
+  Upload,
 } from "lucide-react";
 import { useDb } from "../hooks/useNuba.js";
 import { useToast } from "../context/ToastContext.jsx";
@@ -429,6 +430,57 @@ export default function Incidencias() {
 
   const aptoDe = (id) => db.apartamentos.find((a) => a.id === id);
 
+  // Función para importar incidencias desde un CSV de ICNEA
+  const importarIcneaCsv = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const text = event.target.result;
+        const lineas = text.split("\n");
+        let importadas = 0;
+
+        lineas.forEach((linea, index) => {
+          if (index === 0) return; // Omitir cabecera si la hubiera
+          if (!linea.trim()) return;
+          
+          const columnas = linea.split(/[,;]/); // Separador por coma o punto y coma
+          const textoLinea = linea.toLowerCase();
+
+          const aptoEncontrado = db.apartamentos.find((a) =>
+            textoLinea.includes(a.nombre.toLowerCase()) || textoLinea.includes(a.slug?.toLowerCase())
+          );
+
+          if (aptoEncontrado && columnas.length >= 2) {
+            const descripcion = columnas[1]?.trim() || columnas[0]?.trim() || "Incidencia importada de ICNEA";
+            crearIncidencia({
+              apartamento_id: aptoEncontrado.id,
+              descripcion: descripcion,
+              urgencia: "media",
+              responsable: "",
+              patron_accion: "Revisar incidencia ICNEA",
+              alerta_horas: 48,
+              foto_url: null,
+            });
+            importadas++;
+          }
+        });
+
+        if (importadas > 0) {
+          toast(`¡Se importaron ${importadas} incidencias desde ICNEA!`, "ok");
+        } else {
+          toast("El archivo CSV se procesó, pero no se asignaron pisos automáticamente.", "info");
+        }
+      } catch (err) {
+        console.error(err);
+        toast("Error al leer el archivo CSV de ICNEA", "error");
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  };
+
   const crear = (form) => {
     const id = crearIncidencia(form);
     setSheet(null);
@@ -462,7 +514,7 @@ export default function Incidencias() {
 
   return (
     <div className="space-y-3.5">
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <Segmented
           value={vista}
           onChange={setVista}
@@ -471,9 +523,24 @@ export default function Incidencias() {
             { value: "resueltas", label: "Resueltas", count: resueltas.length },
           ]}
         />
-        <Button className="ml-auto" size="sm" onClick={() => setSheet({ tipo: "nueva" })}>
-          <Plus size={15} /> Nueva
-        </Button>
+        
+        <div className="flex items-center gap-2">
+          {/* Apartado Importar desde ICNEA (.csv) */}
+          <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl border border-line bg-white px-3 py-2 text-[12.5px] font-semibold text-ink-2 transition hover:bg-canvas">
+            <Upload size={14} className="text-accent" />
+            <span>Importar ICNEA (.csv)</span>
+            <input
+              type="file"
+              accept=".csv"
+              className="hidden"
+              onChange={importarIcneaCsv}
+            />
+          </label>
+
+          <Button size="sm" onClick={() => setSheet({ tipo: "nueva" })}>
+            <Plus size={15} /> Nueva
+          </Button>
+        </div>
       </div>
 
       {aptosConIncidencias.length > 0 && (
@@ -512,7 +579,7 @@ export default function Incidencias() {
             text={
               vista === "abiertas"
                 ? "No hay incidencias pendientes con este filtro."
-                : "Cuando resuelvas una incidencia aparecerá aquí con su coste."
+                : "Когда resuelvas una incidencia aparecerá aquí con su coste."
             }
             action={
               vista === "abiertas" ? (
