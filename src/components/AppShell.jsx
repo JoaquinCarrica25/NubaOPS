@@ -6,6 +6,7 @@ import { useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
+  ClipboardList,
   ShieldCheck,
   AlertTriangle,
   BellRing,
@@ -23,6 +24,7 @@ import { cx } from "./ui.jsx";
 
 const NAV = [
   { to: "/", label: "Inicio", icon: LayoutDashboard, end: true },
+  { to: "/rondas", label: "Rondas de Hoy", icon: ClipboardList },
   { to: "/prevencion", label: "Prevención", icon: ShieldCheck },
   { to: "/pendientes", label: "Pendientes", icon: BellRing },
   { to: "/incidencias", label: "Incidencias", icon: AlertTriangle },
@@ -30,11 +32,12 @@ const NAV = [
   { to: "/historial", label: "Historial", icon: History },
 ];
 
-// En móvil, 5 pestañas abajo (el historial queda en el menú lateral)
-const NAV_MOVIL = NAV.filter((n) => n.to !== "/historial");
+// En móvil, 5 pestañas principales abajo
+const NAV_MOVIL = NAV.filter((n) => n.to !== "/historial" && n.to !== "/rondas");
 
 const TITULOS = {
   "/": ["Inicio", "El estado real de la casa, de un vistazo"],
+  "/rondas": ["Rondas de Hoy", "Agenda y orden de comprobaciones diarias"],
   "/prevencion": ["Prevención", "Checklist de los 31 puntos por apartamento"],
   "/pendientes": ["Pendientes", "Alarmas del checklist que hay que resolver"],
   "/incidencias": ["Incidencias", "Lo que está roto y quién lo arregla"],
