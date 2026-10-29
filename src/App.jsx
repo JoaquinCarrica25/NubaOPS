@@ -9,6 +9,7 @@ import { MODO, cargarTodo } from "./lib/api.js";
 import PerfilGate from "./components/PerfilGate.jsx";
 import AppShell from "./components/AppShell.jsx";
 import Inicio from "./pages/Inicio.jsx";
+import RondasHoy from "./pages/RondasHoy.jsx";
 import Prevencion from "./pages/Prevencion.jsx";
 import Pendientes from "./pages/Pendientes.jsx";
 import Incidencias from "./pages/Incidencias.jsx";
@@ -94,6 +95,7 @@ export default function App() {
     <Routes>
       <Route element={<AppShell />}>
         <Route index element={<Inicio />} />
+        <Route path="/rondas" element={<RondasHoy />} />
         <Route path="/prevencion" element={<Prevencion />} />
         <Route path="/pendientes" element={<Pendientes />} />
         <Route path="/incidencias" element={<Incidencias />} />
